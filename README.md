@@ -18,4 +18,4 @@
 ## How to use
 `route for admin: /admin/home`
 `set email password in app\config\send_email for sending email by smtp`
-`Click JSON button to download json and send zipped json to adnim email`
+`Click JSON button to download json and send zipped json to admin email`
