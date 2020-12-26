@@ -14,7 +14,6 @@ class AdminHomeController extends Controller
     public function index(UsersDataTable $dataTable)
     {
         return $dataTable->render('admin.home');
-        // return Datatables::of(User::query())->make(true);
     }
 
     public function getUsers(Request $request)
@@ -29,7 +28,9 @@ class AdminHomeController extends Controller
 
     public function saveJson(Request $request) {
 
-        $admin = User::select('email')->where('role_id',1)->get()->toArray();
+
+        $admin = User::where('role_id',1)->get()->toArray();
+
         if ($request->ajax()) {
             $json = $request->data;
             $my_save_dir = public_path();
@@ -43,8 +44,8 @@ class AdminHomeController extends Controller
             $zip = new \ZipArchive();
 
             if ($zip->open($filename, \ZipArchive::CREATE) === TRUE) {
+
                 // Add File in ZipArchive
-                // $zip->addFile($my_save_dir,'Users.json');
                 $zip->addFile(public_path() . "/Users.json","Users.json");
 
                 // Close ZipArchive
@@ -62,10 +63,9 @@ class AdminHomeController extends Controller
                     $email->Host       = 'smtp.gmail.com';
                     $email->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                     $email->Port       = 465;
-                    $email->SMTPAuth   = true;
-                    //$email->SMTPSecure = 'SSL';
-                    $email->Username   = $item;
-                    $email->Password   = '********'; // Enter email password
+                    $email->SMTPAuth   = true;                    
+                    $email->Username   = $item['email'];
+                    $email->Password   = config('send_email.admin.password');
                     $email->SetFrom($item);
                     $email->Subject   = 'Users table JSON';
                     $email->AddAddress($item);
@@ -75,7 +75,7 @@ class AdminHomeController extends Controller
                     $email->AddAttachment( $file_to_attach );
 
                     // Content
-                    $email->isHTML(true);                                  // Set email format to HTML
+                    $email->isHTML(true);                                  
                     $email->Body    = 'Users table';
                     $email->AltBody = 'Users table';
 
@@ -85,12 +85,6 @@ class AdminHomeController extends Controller
                 }
 
             }
-
-
-
-//            // We return the file immediately after download
-//            return response()->download($zip_file);
-
         }
     }
 
